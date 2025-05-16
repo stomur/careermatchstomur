@@ -1,8 +1,19 @@
 
 import streamlit as st, pandas as pd
-st.set_page_config(page_title='Smarties‑Diabetic Companion', layout='centered')
-st.title('Smarties‑Diabetic Companion')
-st.caption('Full‑week sample data included')
+from contextlib import contextmanager
+
+st.set_page_config(page_title='Smarties‑Diabetic Companion', page_icon='💉', layout='centered')
+
+@contextmanager
+def card():
+    st.markdown('<div style="background:rgba(255,255,255,.9);padding:1.5rem;border-radius:1rem;">', unsafe_allow_html=True)
+    yield
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with card():
+    st.title('Smarties‑Diabetic Companion')
+    st.caption('Week‑long sample data included')
+
 sample="""timestamp,glucose
 2025-05-12 08:00,110
 2025-05-12 13:00,140
@@ -30,4 +41,5 @@ file=st.file_uploader('Upload CSV', type='csv')
 if file:
     df=pd.read_csv(file)
     df['timestamp']=pd.to_datetime(df['timestamp'])
+    df=df.sort_values('timestamp')
     st.line_chart(df.set_index('timestamp')['glucose'])
